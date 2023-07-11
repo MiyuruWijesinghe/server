@@ -72,24 +72,16 @@ public class SaleController {
             return saleDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
         }
 
-
-/*
-        String date = pageQuery.getSearchParam("date");
-*/
         Integer branch = pageQuery.getSearchParamAsInteger("branch");
 
         List<Sale> sales = saleDao.findAll(DEFAULT_SORT);
         Stream<Sale> stream = sales.parallelStream();
-
 
         List<Sale> filteredSales = stream.filter(sale -> {
 
             if(branch!=null)
                 if(!sale.getBranch().getId().equals(branch)) return false;
 
-          /*  if(date!=null)
-                if(!date.getDate().toLowerCase().contains(date.toLowerCase())) return false;
-*/
             return true;
         }).collect(Collectors.toList());
 
@@ -129,28 +121,14 @@ public class SaleController {
         for (Saleitem saleitem:sale.getSaleitemList()){
             saleitem.setSale(sale);
         }
-        /*for (Salepayment salepayment:sale.getSalepaymentList()){
-            salepayment.setSale(sale);
-        }*/
-
 
         PersistHelper.save(()-> {
             sale.setCode(codeGenerator.getNextId(codeConfig));
-          /*  sale.getSaleitemList().forEach(saleitem -> {
-                Inventory inventorySaleitem =  inventoryDao.findByItem(saleitem.getI;
-
-                {
-                    System.out.println(inventorySaleitem);
-                    saleitem.getItem().setId(inventorySaleitem.getId());
-                }
-            });
-*/
             return saleDao.save(sale);
         });
 
 
             for (Saleitem saleitem:sale.getSaleitemList()) {
-
 
                 Optional<Inventory> optionalInventory = inventoryDao.findByItemAndBranch(saleitem.getItem(), sale.getBranch());
                 if (optionalInventory.isPresent()) {
@@ -179,19 +157,11 @@ public class SaleController {
         sale.setCode(oldSale.getCode());
         sale.setDate(oldSale.getDate());
 
-
         EntityValidator.validate(sale);
 
         for (Saleitem saleitem:sale.getSaleitemList()){
             saleitem.setSale(sale);
         }
-       /* for (Salepayment salepayment:sale.getSalepaymentList()){
-            salepayment.setSale(sale);
-        }
-*/
-
-
-
 
          return new ResourceLink(sale.getId(),"/sales/"+sale.getId());
     }

@@ -55,7 +55,7 @@ public class Purchase {
     private Porder porder;
 
 
-    @OneToMany(mappedBy = "purchase", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "purchase", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Purchaseitem> purchaseitemList;
 
 

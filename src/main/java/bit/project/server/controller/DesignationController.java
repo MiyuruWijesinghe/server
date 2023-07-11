@@ -15,10 +15,11 @@ import java.util.List;
 @RequestMapping("/designations")
 public class DesignationController {
 
-    @Autowired DesignationDao designationDao;
+    @Autowired
+    DesignationDao designationDao;
 
     @GetMapping
-    public List<Designation> getAll(){
+    public List<Designation> getAll() {
         return designationDao.findAll();
     }
 }

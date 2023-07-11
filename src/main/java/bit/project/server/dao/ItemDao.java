@@ -11,8 +11,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 
-@RepositoryRestResource(exported=false)
-public interface ItemDao extends JpaRepository<Item,Integer> {
+@RepositoryRestResource(exported = false)
+public interface ItemDao extends JpaRepository<Item, Integer> {
 
     @Query("select new Item(i.id, i.name) from Item i")
     Page<Item> findAllBasic(PageRequest pageRequest);

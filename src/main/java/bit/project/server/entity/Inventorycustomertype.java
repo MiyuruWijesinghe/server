@@ -19,19 +19,19 @@ public class Inventorycustomertype {
 
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private BigDecimal price;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Inventory inventory;
 
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Customertype customertype;
 
-    public Inventorycustomertype(Integer id){
+    public Inventorycustomertype(Integer id) {
         this.id = id;
     }
 }

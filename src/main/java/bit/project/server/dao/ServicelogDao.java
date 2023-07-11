@@ -9,7 +9,7 @@ import bit.project.server.entity.Servicelog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
-public interface ServicelogDao extends JpaRepository<Servicelog, String>{
+@RepositoryRestResource(exported = false)
+public interface ServicelogDao extends JpaRepository<Servicelog, String> {
 
 }

@@ -9,7 +9,7 @@ import bit.project.server.entity.Systemmodule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
-public interface SystemmoduleDao extends JpaRepository<Systemmodule, Integer>{
+@RepositoryRestResource(exported = false)
+public interface SystemmoduleDao extends JpaRepository<Systemmodule, Integer> {
 
 }

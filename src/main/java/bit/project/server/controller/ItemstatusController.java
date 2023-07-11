@@ -21,6 +21,7 @@ public class ItemstatusController {
     ItemstatusDao itemstatusDao;
 
     @GetMapping
-    public List<Itemstatus> getAll(){ return itemstatusDao.findAll();
+    public List<Itemstatus> getAll() {
+        return itemstatusDao.findAll();
     }
 }

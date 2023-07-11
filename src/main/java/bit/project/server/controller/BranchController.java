@@ -49,7 +49,7 @@ public class BranchController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public BranchController(){
+    public BranchController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("branch");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -58,11 +58,11 @@ public class BranchController {
     }
 
     @GetMapping
-    public Page<Branch> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Branch> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all branches", UsecaseList.GET_ALL_BRANCHES);
 
-        if(pageQuery.isEmptySearch()){
-            return branchDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return branchDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -74,15 +74,16 @@ public class BranchController {
 
         List<Branch> filteredBranches = stream.filter(branch -> {
 
-            if(name!=null) {
-                if(!branch.getName().toLowerCase().contains(name.toLowerCase())) return false;
+            if (name != null) {
+                if (!branch.getName().toLowerCase().contains(name.toLowerCase())) return false;
             }
 
-            if(contact!=null) {
+            if (contact != null) {
                 boolean crit1 = branch.getContact1().toLowerCase().contains(contact.toLowerCase());
                 boolean crit2 = false;
-                if(branch.getContact2() != null) crit2 = branch.getContact2().toLowerCase().contains(contact.toLowerCase());
-                if(!crit1 && !crit2) return false;
+                if (branch.getContact2() != null)
+                    crit2 = branch.getContact2().toLowerCase().contains(contact.toLowerCase());
+                if (!crit1 && !crit2) return false;
             }
 
             return true;
@@ -96,17 +97,17 @@ public class BranchController {
         accessControlManager.authorize(request, "No privilege to get details of a branch", UsecaseList.GET_BRANCH);
 
         Optional<Branch> optionalCustomer = branchDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Branch not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Branch not found");
         return optionalCustomer.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a branch", UsecaseList.DELETE_BRANCH);
 
-        try{
-            if(branchDao.existsById(id)) branchDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (branchDao.existsById(id)) branchDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this branch already used in another module");
         }
     }
@@ -122,28 +123,27 @@ public class BranchController {
         branch.setBranchstatus(new Branchstatus(1));
 
 
-
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Branch branchByName = branchDao.findByName(branch.getName());
         Branch branchByContact1 = branchDao.findByContact1(branch.getContact1());
-        if(branchByName!=null) errorBag.add("name","Name number already exists");
-        if(branchByContact1!=null) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (branchByName != null) errorBag.add("name", "Name number already exists");
+        if (branchByContact1 != null) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             branch.setCode(codeGenerator.getNextId(codeConfig));
             return branchDao.save(branch);
         });
 
-        return new ResourceLink(branch.getId(),"/branches/"+branch.getId());
+        return new ResourceLink(branch.getId(), "/branches/" + branch.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Branch branch, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Branch branch, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update branch details", UsecaseList.UPDATE_BRANCH);
 
         Optional<Branch> optionalBranch = branchDao.findById(id);
-        if(optionalBranch.isEmpty()) throw new ObjectNotFoundException("Branch not found");
+        if (optionalBranch.isEmpty()) throw new ObjectNotFoundException("Branch not found");
         Branch oldBranch = optionalBranch.get();
 
         branch.setId(id);
@@ -154,15 +154,16 @@ public class BranchController {
         EntityValidator.validate(branch);
 
 
-
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Branch branchByName = branchDao.findByName(branch.getName());
         Branch branchByContact1 = branchDao.findByContact1(branch.getContact1());
-        if(branchByName!=null) if(!branchByName.getId().equals(id)) errorBag.add("name","NIC number already exists");
-        if(branchByContact1!=null) if(!branchByContact1.getId().equals(id)) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (branchByName != null)
+            if (!branchByName.getId().equals(id)) errorBag.add("name", "NIC number already exists");
+        if (branchByContact1 != null)
+            if (!branchByContact1.getId().equals(id)) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         branch = branchDao.save(branch);
-        return new ResourceLink(branch.getId(),"/branches/"+branch.getId());
+        return new ResourceLink(branch.getId(), "/branches/" + branch.getId());
     }
 }

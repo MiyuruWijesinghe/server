@@ -20,24 +20,24 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Usecase{
+public class Usecase {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String task;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonIgnoreProperties({"usecaseList"})
     private Systemmodule systemmodule;
 
     @JsonIgnore
-    @ManyToMany(mappedBy="usecaseList")
+    @ManyToMany(mappedBy = "usecaseList")
     private List<Role> roleList;
 
-    public Usecase(Integer id){
+    public Usecase(Integer id) {
         this.id = id;
     }
 }

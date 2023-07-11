@@ -26,12 +26,12 @@ public class InventorycustomertypeController {
 
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a item", UsecaseList.DELETE_INVENTORYCUSTOMERTYPE);
 
-        try{
-            if(inventorycustomertypeDao.existsById(id)) inventorycustomertypeDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (inventorycustomertypeDao.existsById(id)) inventorycustomertypeDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this item already used in another module");
         }
     }

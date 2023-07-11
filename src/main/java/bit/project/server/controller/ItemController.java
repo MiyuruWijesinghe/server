@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 @CrossOrigin
 @RestController
 @EnableScheduling
@@ -62,7 +63,7 @@ public class ItemController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public ItemController(){
+    public ItemController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("item");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -71,18 +72,18 @@ public class ItemController {
     }
 
     @GetMapping("/basic")
-    public Page<Item> getAllBasic(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Item> getAllBasic(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all item basic data", UsecaseList.GET_BASIC_ITEMS);
-        return itemDao.findAllBasic(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        return itemDao.findAllBasic(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
     }
 
     @GetMapping
-    public Page<Item> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Item> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all items", UsecaseList.GET_ALL_ITEMS);
 
 
-        if(pageQuery.isEmptySearch()){
-            return itemDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return itemDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -96,15 +97,15 @@ public class ItemController {
 
         List<Item> filtereditems = stream.filter(item -> {
 
-            if(name!=null)
-                if(!item.getName().toLowerCase().contains(name.toLowerCase())) return false;
+            if (name != null)
+                if (!item.getName().toLowerCase().contains(name.toLowerCase())) return false;
 
-            if(Itemstatus!=null)
-                if(!item.getItemstatus().getId().equals(Itemstatus)) return false;
+            if (Itemstatus != null)
+                if (!item.getItemstatus().getId().equals(Itemstatus)) return false;
 
-            if(Itemtype!=null)
-                if(!item.getItemtype().getId().equals(Itemtype)) return false;
-                
+            if (Itemtype != null)
+                if (!item.getItemtype().getId().equals(Itemtype)) return false;
+
 
             return true;
         }).collect(Collectors.toList());
@@ -117,17 +118,17 @@ public class ItemController {
         accessControlManager.authorize(request, "No privilege to get details of a item", UsecaseList.GET_ITEM);
 
         Optional<Item> optionalCustomer = itemDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Item not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Item not found");
         return optionalCustomer.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a item", UsecaseList.DELETE_ITEM);
 
-        try{
-            if(itemDao.existsById(id)) itemDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (itemDao.existsById(id)) itemDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this item already used in another module");
         }
     }
@@ -142,29 +143,29 @@ public class ItemController {
         item.setId(null);
 
 
-        for (Itembranch itembranch:item.getItembranchList()){
+        for (Itembranch itembranch : item.getItembranchList()) {
             itembranch.setItem(item);
         }
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Item itemByname = itemDao.findByName(item.getName());
-        if(itemByname!=null) errorBag.add("name","Item name already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (itemByname != null) errorBag.add("name", "Item name already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             item.setCode(codeGenerator.getNextId(codeConfig));
             return itemDao.save(item);
         });
 
-        return new ResourceLink(item.getId(),"/items/"+item.getId());
+        return new ResourceLink(item.getId(), "/items/" + item.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Item item, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Item item, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update item details", UsecaseList.UPDATE_ITEM);
 
         Optional<Item> optionalItem = itemDao.findById(id);
-        if(optionalItem.isEmpty()) throw new ObjectNotFoundException("Item not found");
+        if (optionalItem.isEmpty()) throw new ObjectNotFoundException("Item not found");
         Item oldItem = optionalItem.get();
 
         item.setId(id);
@@ -173,72 +174,73 @@ public class ItemController {
         item.setCode(oldItem.getCode());
         EntityValidator.validate(item);
 
-        for (Itembranch itembranch:item.getItembranchList()){
+        for (Itembranch itembranch : item.getItembranchList()) {
             itembranch.setItem(item);
         }
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Item itemByName = itemDao.findByName(item.getName());
-        if(itemByName!=null) if(!itemByName.getId().equals(id)) errorBag.add("name","Item name already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (itemByName != null) if (!itemByName.getId().equals(id)) errorBag.add("name", "Item name already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         item = itemDao.save(item);
-        return new ResourceLink(item.getId(),"/items/"+item.getId());
+        return new ResourceLink(item.getId(), "/items/" + item.getId());
     }
+
     @Async
-    @Scheduled(fixedRate = 24*60*60*1000,initialDelay = 5000)
-    public void checkRop() throws InterruptedException{
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000, initialDelay = 5000)
+    public void checkRop() throws InterruptedException {
         System.out.println("Started");
 
-         List<Item> items = itemDao.findAllActiveitems();
-         for (Item item : items){
-             for (Itembranch itembranch : item.getItembranchList()){
-              Optional<Inventory> optionalInventory = inventoryDao.findByItemAndBranch(item , itembranch.getBranch());
-              if (optionalInventory.isEmpty()){
-                  continue;
-              } else {
-                 if (optionalInventory.get().getQty() < itembranch.getRop()){
+        List<Item> items = itemDao.findAllActiveitems();
+        for (Item item : items) {
+            for (Itembranch itembranch : item.getItembranchList()) {
+                Optional<Inventory> optionalInventory = inventoryDao.findByItemAndBranch(item, itembranch.getBranch());
+                if (optionalInventory.isEmpty()) {
+                    continue;
+                } else {
+                    if (optionalInventory.get().getQty() < itembranch.getRop()) {
 
-                     System.out.println(item.getName());
-                     System.out.println(itembranch.getBranch().getName());
+                        System.out.println(item.getName());
+                        System.out.println(itembranch.getBranch().getName());
 
-                   List<Employee> employees = employeeDao.findAllByBranch( itembranch.getBranch());
-                     System.out.println(employees.isEmpty());
+                        List<Employee> employees = employeeDao.findAllByBranch(itembranch.getBranch());
+                        System.out.println(employees.isEmpty());
 
-                     if (!employees.isEmpty()){
-                       for (Employee employee : employees){
+                        if (!employees.isEmpty()) {
+                            for (Employee employee : employees) {
 
-                           try{
-                               System.out.println(employee.getCallingname());
+                                try {
+                                    System.out.println(employee.getCallingname());
 
-                              List<User>  userList =  userDao.findUsersByEmployee(employee.getId());
+                                    List<User> userList = userDao.findUsersByEmployee(employee.getId());
 
-                               System.out.println(userList.isEmpty());
-
-
-                              if (userList == null) continue;
-                              if (userList.size()== 0) continue;
-                              User user = userList.get(0);
-                               System.out.println(item.getName());
-                               Notification notification = new Notification();
-                               notification.setId(UUID.randomUUID().toString());
-                               notification.setDosend(LocalDateTime.now());
-                               notification.setUser(user);
-
-                               notification.setMessage("Following item is below ROP\n Item name : " + item.getName() + "\n Remaining quantity " +
-                                       optionalInventory.get().getQty() + "\n Branch "+ itembranch.getBranch().getName());
-                               notificationDao.save(notification);
+                                    System.out.println(userList.isEmpty());
 
 
-                           } catch (Exception e ){
-                               System.out.println(e.getMessage());
-                           }
-                       }
-                   }
-                 }
-              }
-             }
-         }
+                                    if (userList == null) continue;
+                                    if (userList.size() == 0) continue;
+                                    User user = userList.get(0);
+                                    System.out.println(item.getName());
+                                    Notification notification = new Notification();
+                                    notification.setId(UUID.randomUUID().toString());
+                                    notification.setDosend(LocalDateTime.now());
+                                    notification.setUser(user);
+
+                                    notification.setMessage("Following item is below ROP\n Item name : " + item.getName() + "\n Remaining quantity " +
+                                            optionalInventory.get().getQty() + "\n Branch " + itembranch.getBranch().getName());
+                                    notificationDao.save(notification);
+
+
+                                } catch (Exception e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     }
 }

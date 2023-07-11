@@ -19,19 +19,19 @@ import java.util.List;
 public class Porderstatus {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message="Name is required")
-    @Size(min=0, max=20, message="Maximum character count is 20")
+    @NotNull(message = "Name is required")
+    @Size(min = 0, max = 20, message = "Maximum character count is 20")
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy="porderstatus")
+    @OneToMany(mappedBy = "porderstatus")
     private List<Porder> porderList;
 
 
-    public Porderstatus(Integer id){
+    public Porderstatus(Integer id) {
         this.id = id;
     }
 

@@ -24,40 +24,40 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Employee{
+public class Employee {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     //@NotNull(message="Code is required")
-    @Size(min=10, max=10 , message="Character count should be 8")
+    @Size(min = 10, max = 10, message = "Character count should be 8")
     private String code;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String callingname;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String fullname;
 
     private LocalDate dobirth;
 
-    @NotNull(message="NIC is required")
-    @Size(min=0, max=12, message="Maximum character count is 12")
+    @NotNull(message = "NIC is required")
+    @Size(min = 0, max = 12, message = "Maximum character count is 12")
     private String nic;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String address;
 
-    @Size(min=10, max=10, message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String mobile;
 
-    @Size(min=10, max=10, message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String land;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String description;
 
     private LocalDate dorecruite;
@@ -67,41 +67,41 @@ public class Employee{
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime tocreation;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Gender gender;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Civilstatus civilstatus;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Designation designation;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Employeestatus employeestatus;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Nametitle nametitle;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String email;
 
     @JsonIgnore
-    @OneToMany(mappedBy="employee")
+    @OneToMany(mappedBy = "employee")
     private List<User> userList;
 
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Branch branch;
 
-    public Employee(Integer id){
+    public Employee(Integer id) {
         this.id = id;
     }
 
-    public Employee(Integer id, String code, String callingname, Nametitle nametitle){
+    public Employee(Integer id, String code, String callingname, Nametitle nametitle) {
         this.id = id;
         this.code = code;
         this.callingname = callingname;

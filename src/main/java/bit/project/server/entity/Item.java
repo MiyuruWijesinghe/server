@@ -22,18 +22,17 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Item {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min=10, max=10, message="Character count should be 8")
+    @Size(min = 10, max = 10, message = "Character count should be 8")
     private String code;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String name;
 
-
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String description;
 
     @NotNull(message = "last price should not be null")
@@ -48,29 +47,28 @@ public class Item {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime todeletion;
 
-
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Itemstatus itemstatus;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Itemtype itemtype;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Itemcategory itemcategory;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Unit unit;
 
     @JsonIgnore
-    @OneToMany(mappedBy="item")
+    @OneToMany(mappedBy = "item")
     private List<Inventory> inventoryList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="item")
+    @OneToMany(mappedBy = "item")
     private List<Saleitem> saleitemList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="item")
+    @OneToMany(mappedBy = "item")
     private List<Porderitem> porderitemList;
 
    /* @JsonIgnore
@@ -78,32 +76,29 @@ public class Item {
     private List<Saleitem> saleitemList;*/
 
     @JsonIgnore
-    @OneToMany(mappedBy="item")
+    @OneToMany(mappedBy = "item")
     private List<Purchaseitem> purchaseitemList;
 
-
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
-    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER, orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Itembranch> itembranchList;
 
-
-
-
     @JsonIgnore
-    @ManyToMany(mappedBy="itemList")
+    @ManyToMany(mappedBy = "itemList")
     private List<Supplier> supplierList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="item")
+    @OneToMany(mappedBy = "item")
     private List<Complain> complainList;
 
-    public Item(Integer id){
+    public Item(Integer id) {
         this.id = id;
     }
-    public Item(Integer id, String name){
+
+    public Item(Integer id, String name) {
         this.id = id;
         this.name = name;
     }

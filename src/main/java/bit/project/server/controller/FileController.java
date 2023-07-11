@@ -41,18 +41,18 @@ public class FileController {
     Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @GetMapping("/thumbnail/{fileId}")
-    public ResponseEntity<byte[]> getThumbnail(@PathVariable String fileId){
+    public ResponseEntity<byte[]> getThumbnail(@PathVariable String fileId) {
         Optional<File> optionalFile = fileDao.findThumbnailById(fileId);
-        if(optionalFile.isEmpty()) throw new ObjectNotFoundException("File not found");
+        if (optionalFile.isEmpty()) throw new ObjectNotFoundException("File not found");
         File file = optionalFile.get();
         return FileHelper.byteArrayToResponseEntity(file.getThumbnail(), file.getThumbnailmimetype());
 
     }
 
     @GetMapping("/details/{fileId}")
-    public File getBasicDetails(@PathVariable String fileId){
+    public File getBasicDetails(@PathVariable String fileId) {
         Optional<File> optionalFile = fileDao.findFileDetailsById(fileId);
-        if(optionalFile.isEmpty()) throw new ObjectNotFoundException("File not found");
+        if (optionalFile.isEmpty()) throw new ObjectNotFoundException("File not found");
         return optionalFile.get();
     }
 
@@ -62,7 +62,7 @@ public class FileController {
         byte[] fileBytes = multipartFile.getBytes();
         String mimetype = multipartFile.getContentType();
 
-        if (mimetype == null || fileBytes == null) throw  new BadHttpRequest();
+        if (mimetype == null || fileBytes == null) throw new BadHttpRequest();
 
         mimetype = mimetype.toLowerCase();
 
@@ -72,39 +72,39 @@ public class FileController {
         String thumnailMimetype;
         String thumbnailLocation = "src/main/resources/thumbnails/";
 
-        if(mimetype.equals("image/jpg") || mimetype.equals("image/jpeg")){
+        if (mimetype.equals("image/jpg") || mimetype.equals("image/jpeg")) {
             thumbnail = ImageHelper.resizeJPGImage(fileBytes, 128, 128);
             thumnailMimetype = "image/jpeg";
-        }else if(mimetype.equals("image/png")){
+        } else if (mimetype.equals("image/png")) {
             thumbnail = ImageHelper.resizePNGImage(fileBytes, 128, 128);
             thumnailMimetype = "image/png";
-        }else if(mimetype.equals("image/svg+xml")){
+        } else if (mimetype.equals("image/svg+xml")) {
             thumbnail = fileBytes;
             thumnailMimetype = "image/svg+xml";
-        }else{
+        } else {
 
-            switch (mimetype){
-                case "application/pdf" :
-                    thumbnail = thumbnailFileProvider(thumbnailLocation+ "pdf.svg");
-                    thumnailMimetype= "image/svg+xml";
+            switch (mimetype) {
+                case "application/pdf":
+                    thumbnail = thumbnailFileProvider(thumbnailLocation + "pdf.svg");
+                    thumnailMimetype = "image/svg+xml";
                     break;
-                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" :
-                case "application/vnd.ms-excel" :
-                    thumbnail = thumbnailFileProvider(thumbnailLocation+ "xls.svg");
-                    thumnailMimetype= "image/svg+xml";
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                case "application/vnd.ms-excel":
+                    thumbnail = thumbnailFileProvider(thumbnailLocation + "xls.svg");
+                    thumnailMimetype = "image/svg+xml";
                     break;
-                case "application/vnd.openxmlformats-officedocument.presentationml.presentation" :
-                    thumbnail = thumbnailFileProvider(thumbnailLocation+ "ppt.svg");
-                    thumnailMimetype= "image/svg+xml";
+                case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+                    thumbnail = thumbnailFileProvider(thumbnailLocation + "ppt.svg");
+                    thumnailMimetype = "image/svg+xml";
                     break;
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" :
-                case "application/msword" :
-                    thumbnail = thumbnailFileProvider(thumbnailLocation+ "doc.svg");
-                    thumnailMimetype= "image/svg+xml";
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                case "application/msword":
+                    thumbnail = thumbnailFileProvider(thumbnailLocation + "doc.svg");
+                    thumnailMimetype = "image/svg+xml";
                     break;
                 default:
-                    thumbnail = thumbnailFileProvider(thumbnailLocation+ "file.svg");
-                    thumnailMimetype="image/svg+xml";
+                    thumbnail = thumbnailFileProvider(thumbnailLocation + "file.svg");
+                    thumnailMimetype = "image/svg+xml";
             }
 
         }

@@ -6,15 +6,19 @@
 package bit.project.server.entity;
 
 import lombok.Data;
+
 import java.util.List;
 import javax.persistence.Id;
 import javax.persistence.Entity;
+
 import lombok.NoArgsConstructor;
+
 import javax.persistence.OneToMany;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,22 +29,22 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Nametitle{
+public class Nametitle {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message="Name is required")
-    @Size(min=0, max=10, message="Maximum character count is 10")
+    @NotNull(message = "Name is required")
+    @Size(min = 0, max = 10, message = "Maximum character count is 10")
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy="nametitle")
+    @OneToMany(mappedBy = "nametitle")
     private List<Employee> employeeList;
 
 
-    public Nametitle(Integer id){
+    public Nametitle(Integer id) {
         this.id = id;
     }
 

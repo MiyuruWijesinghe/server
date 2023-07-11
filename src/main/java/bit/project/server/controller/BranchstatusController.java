@@ -13,19 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 
-
 @CrossOrigin
 @RestController
 @RequestMapping("/branchstatuses")
 public class BranchstatusController {
 
 
-
     @Autowired
     BranchstatusDao branchstatusDao;
 
     @GetMapping
-    public List<Branchstatus> getAll(){
+    public List<Branchstatus> getAll() {
         return branchstatusDao.findAll();
     }
 

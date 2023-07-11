@@ -37,17 +37,19 @@ public class RoleController {
 
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "tocreation");
 
-    @Autowired private RoleDao roleDao;
-    @Autowired private AccessControlManager accessControlManager;
+    @Autowired
+    private RoleDao roleDao;
+    @Autowired
+    private AccessControlManager accessControlManager;
 
     @GetMapping
     public Page<Role> getAll(PageQuery pageQuery, HttpServletRequest request) {
 
         accessControlManager.authorize(request, "No privilege to get all roles", UsecaseList.SHOW_ALL_ROLES);
 
-        if(pageQuery.isEmptySearch()){
+        if (pageQuery.isEmptySearch()) {
             return roleDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
-        }else{
+        } else {
 
             String name = pageQuery.getSearchParam("name");
 
@@ -55,8 +57,8 @@ public class RoleController {
             Stream<Role> stream = roles.parallelStream();
 
             List<Role> filteredUsers = stream.filter(role -> {
-                if(name!=null)
-                    if(!role.getName().toLowerCase().contains(name.toLowerCase())) return false;
+                if (name != null)
+                    if (!role.getName().toLowerCase().contains(name.toLowerCase())) return false;
                 return true;
             }).collect(Collectors.toList());
 
@@ -65,23 +67,23 @@ public class RoleController {
     }
 
     @GetMapping("/basic")
-    public Page<Role> getAllBasic(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Role> getAllBasic(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all roles' basic data", UsecaseList.SHOW_ALL_ROLES, UsecaseList.ADD_USER, UsecaseList.UPDATE_USER);
         return roleDao.findAllBasic(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
     }
 
     @GetMapping("/{id}")
     public Role get(@PathVariable Integer id, HttpServletRequest request) {
-        accessControlManager.authorize(request, "No privilege to get role",  UsecaseList.SHOW_ROLE_DETAILS);
+        accessControlManager.authorize(request, "No privilege to get role", UsecaseList.SHOW_ROLE_DETAILS);
         Optional<Role> optionalRole = roleDao.findById(id);
-        if(optionalRole.isEmpty()) throw new ObjectNotFoundException("Role not found");
+        if (optionalRole.isEmpty()) throw new ObjectNotFoundException("Role not found");
         return optionalRole.get();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceLink add(@RequestBody Role role, HttpServletRequest request){
-        User authUser = accessControlManager.authorize(request, "No privilege to add new role",  UsecaseList.ADD_ROLE);
+    public ResourceLink add(@RequestBody Role role, HttpServletRequest request) {
+        User authUser = accessControlManager.authorize(request, "No privilege to add new role", UsecaseList.ADD_ROLE);
 
         role.setTocreation(LocalDateTime.now());
         role.setCreator(authUser);
@@ -90,19 +92,19 @@ public class RoleController {
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Role roleByName = roleDao.findByName(role.getName());
-        if(roleByName!=null) errorBag.add("name","Name already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (roleByName != null) errorBag.add("name", "Name already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         roleDao.save(role);
-        return new ResourceLink(role.getId(), "/roles/"+role.getId());
+        return new ResourceLink(role.getId(), "/roles/" + role.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Role role, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to update role details",  UsecaseList.UPDATE_ROLE);
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Role role, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to update role details", UsecaseList.UPDATE_ROLE);
 
         Optional<Role> optionalRole = roleDao.findById(id);
-        if(optionalRole.isEmpty()) throw new ObjectNotFoundException("Role not found");
+        if (optionalRole.isEmpty()) throw new ObjectNotFoundException("Role not found");
         Role oldRole = optionalRole.get();
 
         role.setId(id);
@@ -112,24 +114,24 @@ public class RoleController {
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Role roleByName = roleDao.findByName(role.getName());
-        if(roleByName!=null) if(!roleByName.getId().equals(id)) errorBag.add("name","Name already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (roleByName != null) if (!roleByName.getId().equals(id)) errorBag.add("name", "Name already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         oldRole.setUsecaseList(new ArrayList<>());
         roleDao.update(oldRole);
 
         roleDao.update(role);
-        return new ResourceLink(role.getId(), "/roles/"+role.getId());
+        return new ResourceLink(role.getId(), "/roles/" + role.getId());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to delete roles",  UsecaseList.DELETE_ROLE);
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to delete roles", UsecaseList.DELETE_ROLE);
 
-        try{
-            if(roleDao.existsById(id)) roleDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (roleDao.existsById(id)) roleDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this role already used in another module");
         }
     }

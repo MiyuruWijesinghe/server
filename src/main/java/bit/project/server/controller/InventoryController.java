@@ -44,7 +44,7 @@ public class InventoryController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public InventoryController(){
+    public InventoryController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("inventory");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -53,11 +53,11 @@ public class InventoryController {
     }
 
     @GetMapping
-    public Page<Inventory> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Inventory> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all inventories", UsecaseList.GET_ALL_INVENTORIES);
 
-        if(pageQuery.isEmptySearch()){
-            return inventoryDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return inventoryDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -69,12 +69,12 @@ public class InventoryController {
 
         List<Inventory> filteredInventories = stream.filter(inventory -> {
 
-            if(branch!=null)
-                if(!inventory.getBranch().getId().equals(branch)) return false;
+            if (branch != null)
+                if (!inventory.getBranch().getId().equals(branch)) return false;
 
-            if(item!=null)
-                if(!inventory.getItem().getId().equals(item)) return false;
-                
+            if (item != null)
+                if (!inventory.getItem().getId().equals(item)) return false;
+
             return true;
         }).collect(Collectors.toList());
 
@@ -86,17 +86,17 @@ public class InventoryController {
         accessControlManager.authorize(request, "No privilege to get details of a inventory", UsecaseList.GET_INVENTORY);
 
         Optional<Inventory> optionalCustomer = inventoryDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Inventory not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Inventory not found");
         return optionalCustomer.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a inventory", UsecaseList.DELETE_INVENTORY);
 
-        try{
-            if(inventoryDao.existsById(id)) inventoryDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (inventoryDao.existsById(id)) inventoryDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this inventory already used in another module");
         }
     }
@@ -105,30 +105,30 @@ public class InventoryController {
     public ResourceLink add(@RequestBody Inventory inventory, HttpServletRequest request) throws InterruptedException {
         User authUser = accessControlManager.authorize(request, "No privilege to add new inventory", UsecaseList.ADD_INVENTORY);
 
-       
+
         inventory.setCreator(authUser);
         EntityValidator.validate(inventory);
         inventory.setId(null);
 
-        for (Inventorycustomertype inventorycustomertype:inventory.getInventorycustomertypeList()){
+        for (Inventorycustomertype inventorycustomertype : inventory.getInventorycustomertypeList()) {
             inventorycustomertype.setInventory(inventory);
         }
 
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             inventory.setCode(codeGenerator.getNextId(codeConfig));
             return inventoryDao.save(inventory);
         });
 
-        return new ResourceLink(inventory.getId(),"/inventories/"+inventory.getId());
+        return new ResourceLink(inventory.getId(), "/inventories/" + inventory.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Inventory inventory, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Inventory inventory, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update inventory details", UsecaseList.UPDATE_INVENTORY);
 
         Optional<Inventory> optionalInventory = inventoryDao.findById(id);
-        if(optionalInventory.isEmpty()) throw new ObjectNotFoundException("Inventory not found");
+        if (optionalInventory.isEmpty()) throw new ObjectNotFoundException("Inventory not found");
         Inventory oldInventory = optionalInventory.get();
 
         inventory.setId(id);
@@ -139,11 +139,11 @@ public class InventoryController {
         inventory.setItem(oldInventory.getItem());
 
         EntityValidator.validate(inventory);
-        for (Inventorycustomertype inventorycustomertype:inventory.getInventorycustomertypeList()){
+        for (Inventorycustomertype inventorycustomertype : inventory.getInventorycustomertypeList()) {
             inventorycustomertype.setInventory(inventory);
         }
 
         inventory = inventoryDao.save(inventory);
-        return new ResourceLink(inventory.getId(),"/inventories/"+inventory.getId());
+        return new ResourceLink(inventory.getId(), "/inventories/" + inventory.getId());
     }
 }

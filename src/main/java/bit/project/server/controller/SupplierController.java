@@ -50,7 +50,7 @@ public class SupplierController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public SupplierController(){
+    public SupplierController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("supplier");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -59,11 +59,11 @@ public class SupplierController {
     }
 
     @GetMapping
-    public Page<Supplier> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Supplier> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all suppliers", UsecaseList.GET_ALL_SUPPLIERS);
 
-        if(pageQuery.isEmptySearch()){
-            return supplierDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return supplierDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -75,14 +75,15 @@ public class SupplierController {
 
         List<Supplier> filteredCustomers = stream.filter(supplier -> {
 
-            if(name!=null)
-                if(!supplier.getName().toLowerCase().contains(name.toLowerCase())) return false;
+            if (name != null)
+                if (!supplier.getName().toLowerCase().contains(name.toLowerCase())) return false;
 
-            if(contact!=null){
+            if (contact != null) {
                 boolean crit1 = supplier.getContact1().toLowerCase().contains(contact.toLowerCase());
                 boolean crit2 = false;
-                if(supplier.getContact2() != null) crit2 = supplier.getContact2().toLowerCase().contains(contact.toLowerCase());
-                if(!crit1 && !crit2) return false;
+                if (supplier.getContact2() != null)
+                    crit2 = supplier.getContact2().toLowerCase().contains(contact.toLowerCase());
+                if (!crit1 && !crit2) return false;
             }
 
             return true;
@@ -96,17 +97,17 @@ public class SupplierController {
         accessControlManager.authorize(request, "No privilege to get details of a supplier", UsecaseList.GET_SUPPLIER);
 
         Optional<Supplier> optionalCustomer = supplierDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Supplier not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Supplier not found");
         return optionalCustomer.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a supplier", UsecaseList.DELETE_SUPPLIER);
 
-        try{
-            if(supplierDao.existsById(id)) supplierDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (supplierDao.existsById(id)) supplierDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this supplier already used in another module");
         }
     }
@@ -124,24 +125,24 @@ public class SupplierController {
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Supplier supplierByName = supplierDao.findByName(supplier.getName());
         Supplier supplierByContact1 = supplierDao.findByContact1(supplier.getContact1());
-        if(supplierByName!=null) errorBag.add("name","Name number already exists");
-        if(supplierByContact1!=null) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (supplierByName != null) errorBag.add("name", "Name number already exists");
+        if (supplierByContact1 != null) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             supplier.setCode(codeGenerator.getNextId(codeConfig));
             return supplierDao.save(supplier);
         });
 
-        return new ResourceLink(supplier.getId(),"/suppliers/"+supplier.getId());
+        return new ResourceLink(supplier.getId(), "/suppliers/" + supplier.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Supplier supplier, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Supplier supplier, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update supplier details", UsecaseList.UPDATE_SUPPLIER);
 
         Optional<Supplier> optionalCustomer = supplierDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Supplier not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Supplier not found");
         Supplier oldSupplier = optionalCustomer.get();
 
         supplier.setId(id);
@@ -154,11 +155,13 @@ public class SupplierController {
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Supplier supplierByName = supplierDao.findByName(supplier.getName());
         Supplier customerByContact1 = supplierDao.findByContact1(supplier.getContact1());
-        if(supplierByName!=null) if(!supplierByName.getId().equals(id)) errorBag.add("name","NIC number already exists");
-        if(customerByContact1!=null) if(!customerByContact1.getId().equals(id)) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (supplierByName != null)
+            if (!supplierByName.getId().equals(id)) errorBag.add("name", "NIC number already exists");
+        if (customerByContact1 != null)
+            if (!customerByContact1.getId().equals(id)) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         supplier = supplierDao.save(supplier);
-        return new ResourceLink(supplier.getId(),"/suppliers/"+supplier.getId());
+        return new ResourceLink(supplier.getId(), "/suppliers/" + supplier.getId());
     }
 }

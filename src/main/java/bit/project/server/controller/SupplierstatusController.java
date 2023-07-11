@@ -18,12 +18,11 @@ import java.util.List;
 public class SupplierstatusController {
 
 
-
     @Autowired
     SupplierstatusDao supplierstatusDao;
 
     @GetMapping
-    public List<Supplierstatus> getAll(){
+    public List<Supplierstatus> getAll() {
         return supplierstatusDao.findAll();
     }
 

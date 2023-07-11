@@ -18,19 +18,19 @@ import java.math.BigDecimal;
 public class Porderitem {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private BigDecimal qty;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Porder porder;
 
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Item item;
 
-    public Porderitem(Integer id){
+    public Porderitem(Integer id) {
         this.id = id;
     }
 }

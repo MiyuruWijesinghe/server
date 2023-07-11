@@ -23,12 +23,12 @@ public class SalepaymentController {
 
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to delete details of a item", UsecaseList.DELETE_SALEPAYMENT);
 
-        try{
-            if(salepaymentDao.existsById(id)) salepaymentDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (salepaymentDao.existsById(id)) salepaymentDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this item already used in another module");
         }
     }

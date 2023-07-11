@@ -15,10 +15,11 @@ import java.util.List;
 @RequestMapping("/nametitles")
 public class NametitleController {
 
-    @Autowired NametitleDao nametitleDao;
+    @Autowired
+    NametitleDao nametitleDao;
 
     @GetMapping
-    public List<Nametitle> getAll(){
+    public List<Nametitle> getAll() {
         return nametitleDao.findAll();
     }
 }

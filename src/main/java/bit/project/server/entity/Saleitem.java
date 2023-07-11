@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 
-
 @Data
 @Entity
 @NoArgsConstructor
@@ -19,7 +18,7 @@ import java.math.BigDecimal;
 public class Saleitem {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer qty;
@@ -28,22 +27,20 @@ public class Saleitem {
     private BigDecimal unitprice;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Sale sale;
 
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Inventory inventory;
 
     @ManyToOne(optional = false)
     private Item item;
 
 
-
-    public Saleitem(Integer id){
+    public Saleitem(Integer id) {
         this.id = id;
     }
-
 
 
 }

@@ -23,32 +23,32 @@ import java.util.List;
 public class Branch {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     //@NotNull(message="Code is required")
-    @Size(min=10, max=10 , message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String code;
 
-    @NotNull(message="name is required")
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @NotNull(message = "name is required")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String name;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String address;
 
 
-    @NotNull(message="contact1 is required")
-    @Size(min=10, max=10, message="Character count should be 10")
+    @NotNull(message = "contact1 is required")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String contact1;
 
-    @Size(min=10, max=10, message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String contact2;
 
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -59,31 +59,31 @@ public class Branch {
 
     private LocalDate dorecruite;
 
-    @Size(min=10, max=10, message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String fax;
 
-    @NotNull(message="Email should not be null")
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @NotNull(message = "Email should not be null")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String email;
 
 
-    @ManyToOne(optional=false)
-    private Branchstatus branchstatus ;
+    @ManyToOne(optional = false)
+    private Branchstatus branchstatus;
 
     @JsonIgnore
-    @OneToMany(mappedBy="branch")
+    @OneToMany(mappedBy = "branch")
     private List<Employee> employeeList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="branch")
+    @OneToMany(mappedBy = "branch")
     private List<Porder> porderList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="branch")
+    @OneToMany(mappedBy = "branch")
     private List<Inventory> inventoryList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="branch")
+    @OneToMany(mappedBy = "branch")
     private List<Purchase> purchaseList;
 
     @JsonIgnore
@@ -91,15 +91,15 @@ public class Branch {
     private List<Itembranch> itembranchList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="branch")
+    @OneToMany(mappedBy = "branch")
     private List<Sale> saleList;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
 
-    public Branch(Integer id){
+    public Branch(Integer id) {
         this.id = id;
     }
 

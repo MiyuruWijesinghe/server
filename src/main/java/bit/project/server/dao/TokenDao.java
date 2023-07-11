@@ -10,7 +10,7 @@ import bit.project.server.util.jpasupplement.CriteriaQuerySupplement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
-public interface TokenDao extends JpaRepository<Token, String>, CriteriaQuerySupplement<Token>{
+@RepositoryRestResource(exported = false)
+public interface TokenDao extends JpaRepository<Token, String>, CriteriaQuerySupplement<Token> {
 
 }

@@ -20,46 +20,46 @@ import java.time.LocalDateTime;
 public class Complain {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     //@NotNull(message="Code is required")
-    @Size(min=10, max=10 , message="Character count should be 8")
+    @Size(min = 10, max = 10, message = "Character count should be 8")
     private String code;
 
     private String name;
 
     private LocalDate date;
 
-    @NotNull(message="NIC is required")
-    @Size(min=0, max=12, message="Maximum character count is 12")
+    @NotNull(message = "NIC is required")
+    @Size(min = 0, max = 12, message = "Maximum character count is 12")
     private String nic;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String address;
 
-    @NotNull(message="contact1 is required")
-    @Size(min=10, max=10, message="Character count should be 10")
+    @NotNull(message = "contact1 is required")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String contact;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime tocreation;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private Item item;
 
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
 
-    public Complain(Integer id){
+    public Complain(Integer id) {
         this.id = id;
     }
 }

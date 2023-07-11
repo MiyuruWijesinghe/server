@@ -38,8 +38,10 @@ public class SystemmoduleController {
 
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "id");
 
-    @Autowired private SystemmoduleDao systemmoduleDao;
-    @Autowired private AccessControlManager accessControlManager;
+    @Autowired
+    private SystemmoduleDao systemmoduleDao;
+    @Autowired
+    private AccessControlManager accessControlManager;
 
     @GetMapping
     public List<Systemmodule> getAll(HttpServletRequest request) {

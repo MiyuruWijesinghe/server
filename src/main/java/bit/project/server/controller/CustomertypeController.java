@@ -21,7 +21,7 @@ public class CustomertypeController {
     CustomertypeDao customertypeDao;
 
     @GetMapping
-    public List<Customertype> getAll(){
+    public List<Customertype> getAll() {
         return customertypeDao.findAll();
     }
 }

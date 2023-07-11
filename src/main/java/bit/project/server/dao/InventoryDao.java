@@ -11,12 +11,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 
-@RepositoryRestResource(exported=false)
-public interface InventoryDao extends JpaRepository<Inventory,Integer> {
+@RepositoryRestResource(exported = false)
+public interface InventoryDao extends JpaRepository<Inventory, Integer> {
 
-    Optional<Inventory>findByItemAndBranch(Item item,Branch branch);
-
-
+    Optional<Inventory> findByItemAndBranch(Item item, Branch branch);
 
 
 }

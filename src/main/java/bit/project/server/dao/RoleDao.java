@@ -13,8 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
-public interface RoleDao extends JpaRepository<Role, Integer>, UpdateSupplement<Role>{
+@RepositoryRestResource(exported = false)
+public interface RoleDao extends JpaRepository<Role, Integer>, UpdateSupplement<Role> {
     @Query("select new Role(r.id, r.name) from Role r")
     Page<Role> findAllBasic(PageRequest pageRequest);
 

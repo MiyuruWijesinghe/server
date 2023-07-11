@@ -8,8 +8,8 @@ import bit.project.server.entity.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
-public interface  PorderDao extends JpaRepository<Porder,Integer> {
+@RepositoryRestResource(exported = false)
+public interface PorderDao extends JpaRepository<Porder, Integer> {
 
     Porder findByPorderstatus(Porderstatus porderstatus);
 

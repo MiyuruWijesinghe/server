@@ -20,7 +20,7 @@ public class Purchaseitem {
 
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer qty;
@@ -34,13 +34,13 @@ public class Purchaseitem {
     private LocalDate domanufactured;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Purchase purchase;
 
     @ManyToOne(optional = false)
     private Item item;
 
-    public Purchaseitem(Integer id){
+    public Purchaseitem(Integer id) {
         this.id = id;
     }
 }

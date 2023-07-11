@@ -4,7 +4,7 @@ import bit.project.server.entity.Salepayment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(exported=false)
+@RepositoryRestResource(exported = false)
 
-public interface SalepaymentDao extends JpaRepository<Salepayment,Integer> {
+public interface SalepaymentDao extends JpaRepository<Salepayment, Integer> {
 }

@@ -14,9 +14,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@RepositoryRestResource(exported=false)
+@RepositoryRestResource(exported = false)
 
-public interface SaleDao extends JpaRepository<Sale,Integer> {
+public interface SaleDao extends JpaRepository<Sale, Integer> {
 
 
     @Query("select count(c) from Sale c where c.date>=:startdate and c.date<=:enddate")
@@ -25,13 +25,13 @@ public interface SaleDao extends JpaRepository<Sale,Integer> {
     @Query("select sum(s.amount) from Sale s where s.date>=:startdate and s.date<=:enddate")
     Long getSaleByRange(@Param("startdate") LocalDate startdate, @Param("enddate") LocalDate enddate);
 
-    @Query(value = "SELECT sum(p.amount) FROM Sale p where year(p.date) = ? and month(p.date) = ?" , nativeQuery = true)
+    @Query(value = "SELECT sum(p.amount) FROM Sale p where year(p.date) = ? and month(p.date) = ?", nativeQuery = true)
     Integer getMonthlySaleAmount(String year, String month);
 
-    @Query(value = "SELECT sum(p.amount) FROM Sale p where month(p.date) = ? and day(p.date) = ?" , nativeQuery = true)
+    @Query(value = "SELECT sum(p.amount) FROM Sale p where month(p.date) = ? and day(p.date) = ?", nativeQuery = true)
     Integer getDailySaleAmount(String year, String month);
 
-    @Query(value = "SELECT sum(p.amount) FROM Sale p  where year(p.date) = ? and month(p.date) = ?" , nativeQuery = true)
+    @Query(value = "SELECT sum(p.amount) FROM Sale p  where year(p.date) = ? and month(p.date) = ?", nativeQuery = true)
     Integer getMonthlySaleitemCategoryAmount(String year, String month);
 
 }

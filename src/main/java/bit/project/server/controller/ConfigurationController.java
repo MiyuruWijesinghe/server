@@ -2,6 +2,7 @@ package bit.project.server.controller;
 
 import java.util.UUID;
 import java.time.LocalDateTime;
+
 import bit.project.server.dao.UserDao;
 import bit.project.server.entity.User;
 import bit.project.server.util.seed.Seeder;
@@ -12,7 +13,9 @@ import bit.project.server.util.dto.ClientToken;
 import bit.project.server.util.dto.LoginRequest;
 import org.springframework.web.bind.annotation.*;
 import bit.project.server.util.security.Userstatus;
+
 import java.lang.reflect.InvocationTargetException;
+
 import bit.project.server.util.validation.EntityValidator;
 import bit.project.server.util.security.AccessControlManager;
 import bit.project.server.util.validation.ValidationErrorBag;
@@ -49,7 +52,7 @@ public class ConfigurationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public ClientToken config(@RequestBody User user) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, InstantiationException, InvocationTargetException{
+    public ClientToken config(@RequestBody User user) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, InstantiationException, InvocationTargetException {
         user.setTocreation(LocalDateTime.now());
         user.setStatus("Active");
         user.setEmployee(null);
@@ -62,8 +65,9 @@ public class ConfigurationController {
 
         EntityValidator.validate(user);
         ValidationErrorBag errorBag = new ValidationErrorBag();
-        if(!accessControlManager.isStrongPassword(textPassword)) errorBag.add("password","Please enter a strong password like P@ssw0rd");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (!accessControlManager.isStrongPassword(textPassword))
+            errorBag.add("password", "Please enter a strong password like P@ssw0rd");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         userDao.save(user);
         seeder.seed();

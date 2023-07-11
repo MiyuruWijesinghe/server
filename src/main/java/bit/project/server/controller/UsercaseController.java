@@ -21,5 +21,7 @@ public class UsercaseController {
     UsecaseDao usercaseDao;
 
     @GetMapping
-    public List<Usecase> getAll(){return usercaseDao.findAll();}
+    public List<Usecase> getAll() {
+        return usercaseDao.findAll();
+    }
 }

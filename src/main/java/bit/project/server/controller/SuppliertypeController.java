@@ -21,7 +21,7 @@ public class SuppliertypeController {
     SuppliertypeDao suppliertypeDao;
 
     @GetMapping
-    public List<Suppliertype> getAll(){
+    public List<Suppliertype> getAll() {
         return suppliertypeDao.findAll();
     }
 

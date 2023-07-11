@@ -21,19 +21,19 @@ import java.math.BigDecimal;
 public class Itembranch {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer rop;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Item item;
 
-    @ManyToOne(optional = false,fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Branch branch;
 
-    public Itembranch(Integer id){
+    public Itembranch(Integer id) {
         this.id = id;
     }
 

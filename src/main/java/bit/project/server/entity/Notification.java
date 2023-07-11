@@ -7,6 +7,7 @@ package bit.project.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
 import java.util.List;
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -23,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Notification{
+public class Notification {
 
     @Id
     private String id;
@@ -37,14 +39,14 @@ public class Notification{
 
     @NotNull
     @JsonIgnore
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
     @Lob
     @NotNull
     private String message;
 
-    public Notification(String id){
+    public Notification(String id) {
         this.id = id;
     }
 

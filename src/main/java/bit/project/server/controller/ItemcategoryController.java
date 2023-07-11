@@ -19,6 +19,7 @@ public class ItemcategoryController {
     ItemcategoryDao itemcategoryDao;
 
     @GetMapping
-    public List<Itemcategory> getAll(){ return itemcategoryDao.findAll();
+    public List<Itemcategory> getAll() {
+        return itemcategoryDao.findAll();
     }
 }

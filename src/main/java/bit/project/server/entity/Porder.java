@@ -23,15 +23,15 @@ import java.util.List;
 public class Porder {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     //@NotNull(message="Code is required")
-    @Size(min=10, max=10 , message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String code;
 
     @Lob
-    @Size(min=0, max=65535, message="Maximum character count is 65535")
+    @Size(min = 0, max = 65535, message = "Maximum character count is 65535")
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -46,29 +46,29 @@ public class Porder {
 
     private LocalDate dorecieved;
 
-    @ManyToOne(optional=false)
-    private Porderstatus porderstatus ;
+    @ManyToOne(optional = false)
+    private Porderstatus porderstatus;
 
-    @ManyToOne(optional=false)
-    private Branch branch ;
+    @ManyToOne(optional = false)
+    private Branch branch;
 
-    @ManyToOne(optional=false)
-    private Supplier supplier ;
+    @ManyToOne(optional = false)
+    private Supplier supplier;
 
     @JsonIgnore
-    @OneToMany(mappedBy="porder")
+    @OneToMany(mappedBy = "porder")
     private List<Purchase> purchaseList;
 
-    @OneToMany(mappedBy = "porder", fetch = FetchType.EAGER, orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "porder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Porderitem> porderitemList;
 
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
 
-    public Porder(Integer id){
+    public Porder(Integer id) {
         this.id = id;
     }
 }

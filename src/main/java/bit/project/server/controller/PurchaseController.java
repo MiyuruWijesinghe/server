@@ -47,11 +47,11 @@ public class PurchaseController {
     private AccessControlManager accessControlManager;
 
     @Autowired
-   private CodeGenerator codeGenerator;
+    private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
 
-    public PurchaseController(){
+    public PurchaseController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("purchase");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -60,11 +60,11 @@ public class PurchaseController {
     }
 
     @GetMapping
-    public Page<Purchase> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Purchase> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all purchases", UsecaseList.GET_ALL_PURCHASES);
 
-        if(pageQuery.isEmptySearch()){
-            return purchasedao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return purchasedao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -75,8 +75,8 @@ public class PurchaseController {
         Stream<Purchase> stream = purchases.parallelStream();
 
         List<Purchase> filteredPurchases = stream.filter(purchase -> {
-            if(branch!=null)
-                if(!purchase.getBranch().getId().equals(branch)) return false;
+            if (branch != null)
+                if (!purchase.getBranch().getId().equals(branch)) return false;
 
 
             return true;
@@ -90,17 +90,17 @@ public class PurchaseController {
         accessControlManager.authorize(request, "No privilege to get details of a purchase", UsecaseList.GET_PURCHASE);
 
         Optional<Purchase> optionalPurchase = purchasedao.findById(id);
-        if(optionalPurchase.isEmpty()) throw new ObjectNotFoundException("Purchase not found");
+        if (optionalPurchase.isEmpty()) throw new ObjectNotFoundException("Purchase not found");
         return optionalPurchase.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a purchase", UsecaseList.DELETE_PURCHASE);
 
-        try{
-            if(purchasedao.existsById(id)) purchasedao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (purchasedao.existsById(id)) purchasedao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this purchase already used in another module");
         }
     }
@@ -117,49 +117,49 @@ public class PurchaseController {
 
         System.out.println("HERE  2.......");
 
-        for (Purchaseitem purchaseitem : purchase.getPurchaseitemList()){
+        for (Purchaseitem purchaseitem : purchase.getPurchaseitemList()) {
             purchaseitem.setPurchase(purchase);
         }
 
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             purchase.setCode(codeGenerator.getNextId(codeConfig));
             return purchasedao.save(purchase);
         });
 
 
-        for (Purchaseitem purchaseitem:purchase.getPurchaseitemList()){
+        for (Purchaseitem purchaseitem : purchase.getPurchaseitemList()) {
             System.out.println(purchaseitem.getItem().getId());
             System.out.println(purchase.getBranch().getId());
             System.out.println("HERE ....... 3");
 
-            System.out.println("HERE ....... ERROR 1"+purchaseitem.getItem());
-            System.out.println("HERE ....... ERROR 2"+purchase.getBranch());
+            System.out.println("HERE ....... ERROR 1" + purchaseitem.getItem());
+            System.out.println("HERE ....... ERROR 2" + purchase.getBranch());
             Optional<Inventory> optionalInventory = inventoryDao.findByItemAndBranch(purchaseitem.getItem(), purchase.getBranch());
             System.out.println("HERE ....... 4");
-            if (optionalInventory.isPresent()){
+            if (optionalInventory.isPresent()) {
                 System.out.println("Item in inventory");
                 Inventory updatedInventory = optionalInventory.get();
                 updatedInventory.setQty(updatedInventory.getQty() + purchaseitem.getQty());
 
                 inventoryDao.save(updatedInventory);
-            }else {
+            } else {
                 System.out.println("Item not in inventory");
                 Inventory inventory = new Inventory();
                 inventory.setInitqty(purchaseitem.getQty());
-                System.out.println("1111111111111111111"+purchaseitem.getQty());
+                System.out.println("1111111111111111111" + purchaseitem.getQty());
                 inventory.setQty(purchaseitem.getQty());
-                System.out.println("22222222222222222222"+purchaseitem.getQty());
+                System.out.println("22222222222222222222" + purchaseitem.getQty());
                 inventory.setBatchno(purchaseitem.getBatchno());
-                System.out.println("33333333333333333333"+purchaseitem.getQty());
+                System.out.println("33333333333333333333" + purchaseitem.getQty());
                 inventory.setDoexpired(purchaseitem.getDoexpired());
-                System.out.println("44444444444444444444444"+purchaseitem.getDoexpired());
+                System.out.println("44444444444444444444444" + purchaseitem.getDoexpired());
                 inventory.setDomanufactured(purchaseitem.getDomanufactured());
-                System.out.println("44444444444444444444444"+purchaseitem.getDomanufactured());
+                System.out.println("44444444444444444444444" + purchaseitem.getDomanufactured());
                 inventory.setBranch(new Branch(purchase.getBranch().getId()));
-                System.out.println("5555555555555555555555555"+purchase.getBranch().getId());
+                System.out.println("5555555555555555555555555" + purchase.getBranch().getId());
                 inventory.setItem(purchaseitem.getItem());
-                System.out.println("6666666666666666666666666"+purchaseitem.getItem());
+                System.out.println("6666666666666666666666666" + purchaseitem.getItem());
                 inventory.setPurchase(purchase);
                 inventory.setCreator(authUser);
                 inventoryDao.save(inventory);
@@ -167,16 +167,16 @@ public class PurchaseController {
             }
         }
 
-        return new ResourceLink(purchase.getId(),"/purchases/"+purchase.getId());
+        return new ResourceLink(purchase.getId(), "/purchases/" + purchase.getId());
     }
 
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Purchase purchase, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Purchase purchase, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update purchase details", UsecaseList.UPDATE_PURCHASE);
 
         Optional<Purchase> optionalPurchase = purchasedao.findById(id);
-        if(optionalPurchase.isEmpty()) throw new ObjectNotFoundException("Purchase not found");
+        if (optionalPurchase.isEmpty()) throw new ObjectNotFoundException("Purchase not found");
         Purchase oldPurchase = optionalPurchase.get();
 
         purchase.setId(id);
@@ -189,14 +189,13 @@ public class PurchaseController {
         EntityValidator.validate(purchase);
 
 
-
-        for (Purchaseitem purchaseitem:purchase.getPurchaseitemList()){
+        for (Purchaseitem purchaseitem : purchase.getPurchaseitemList()) {
             purchaseitem.setPurchase(purchase);
         }
 
 
         purchase = purchasedao.save(purchase);
-        return new ResourceLink(purchase.getId(),"/purchases/"+purchase.getId());
+        return new ResourceLink(purchase.getId(), "/purchases/" + purchase.getId());
     }
 }
 

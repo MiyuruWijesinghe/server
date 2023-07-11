@@ -20,6 +20,7 @@ public class ItemtypeController {
     ItemtypeDao itemtypeDao;
 
     @GetMapping
-    public List<Itemtype> getAll(){ return itemtypeDao.findAll();
+    public List<Itemtype> getAll() {
+        return itemtypeDao.findAll();
     }
 }

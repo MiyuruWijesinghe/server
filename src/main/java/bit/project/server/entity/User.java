@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,16 +18,16 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User{
+public class User {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min=0, max=50, message="Maximum character count is 50")
+    @Size(min = 0, max = 50, message = "Maximum character count is 50")
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String password;
 
     @NotNull
@@ -50,47 +51,47 @@ public class User{
 
 
     @ManyToOne
-    @JsonIgnoreProperties({"creator","tocreation","fullname","dobirth","nic","address","mobile","land","description","dorecruite","photo","tocreation","gender","civilstatus","designation","employeestatus","creator","email","branch"})
+    @JsonIgnoreProperties({"creator", "tocreation", "fullname", "dobirth", "nic", "address", "mobile", "land", "description", "dorecruite", "photo", "tocreation", "gender", "civilstatus", "designation", "employeestatus", "creator", "email", "branch"})
     private Employee employee;
 
     @JsonIgnore
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy = "user")
     private List<Notification> notificationList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="creator")
+    @OneToMany(mappedBy = "creator")
     private List<Role> roleListBycreator;
 
     @JsonIgnore
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy = "user")
     private List<Token> tokenList;
 
     @JsonIgnore
-    @OneToMany(mappedBy="creator")
+    @OneToMany(mappedBy = "creator")
     private List<User> userListBycreator;
 
     @ManyToMany
     @JoinTable(
-            name="userrole",
-            joinColumns=@JoinColumn(name="user_id", referencedColumnName="id"),
-            inverseJoinColumns=@JoinColumn(name="role_id", referencedColumnName="id")
+            name = "userrole",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    @JsonIgnoreProperties({"creator","tocreation","usecaseList","userList"})
+    @JsonIgnoreProperties({"creator", "tocreation", "usecaseList", "userList"})
     private List<Role> roleList;
 
-    public User(Integer id){
+    public User(Integer id) {
         this.id = id;
     }
 
 
-    public User(Integer id, String username, Employee employee){
+    public User(Integer id, String username, Employee employee) {
         this.id = id;
         this.username = username;
     }
 
     @Transient
     @JsonIgnore
-    public boolean isSuperAdmin(){
+    public boolean isSuperAdmin() {
         if (this.employee != null) return false;
         return true;
     }

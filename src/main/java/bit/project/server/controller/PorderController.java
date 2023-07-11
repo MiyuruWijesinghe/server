@@ -50,7 +50,7 @@ public class PorderController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public PorderController(){
+    public PorderController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("porder");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -95,17 +95,17 @@ public class PorderController {
         accessControlManager.authorize(request, "No privilege to get details of a porder", UsecaseList.GET_PORDER);
 
         Optional<Porder> optionalPorder = porderdao.findById(id);
-        if(optionalPorder.isEmpty()) throw new ObjectNotFoundException("Porder not found");
+        if (optionalPorder.isEmpty()) throw new ObjectNotFoundException("Porder not found");
         return optionalPorder.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a porder", UsecaseList.DELETE_PORDER);
 
-        try{
-            if(porderdao.existsById(id)) porderdao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (porderdao.existsById(id)) porderdao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this porder already used in another module");
         }
     }
@@ -121,25 +121,25 @@ public class PorderController {
         EntityValidator.validate(porder);
         porder.setId(null);
 
-        for (Porderitem porderitem:porder.getPorderitemList()){
+        for (Porderitem porderitem : porder.getPorderitemList()) {
             porderitem.setPorder(porder);
         }
-        
 
-        PersistHelper.save(()->{
+
+        PersistHelper.save(() -> {
             porder.setCode(codeGenerator.getNextId(codeConfig));
             return porderdao.save(porder);
         });
 
-        return new ResourceLink(porder.getId(),"/porders/"+porder.getId());
+        return new ResourceLink(porder.getId(), "/porders/" + porder.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Porder porder, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Porder porder, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update porder details", UsecaseList.UPDATE_PORDER);
 
         Optional<Porder> optionalPorder = porderdao.findById(id);
-        if(optionalPorder.isEmpty()) throw new ObjectNotFoundException("Porder not found");
+        if (optionalPorder.isEmpty()) throw new ObjectNotFoundException("Porder not found");
         Porder oldPorder = optionalPorder.get();
 
         porder.setId(id);
@@ -151,21 +151,15 @@ public class PorderController {
         porder.setTocreation(oldPorder.getTocreation());
         porder.setCode(oldPorder.getCode());
 
-        for (Porderitem porderitem:porder.getPorderitemList()){
+        for (Porderitem porderitem : porder.getPorderitemList()) {
             porderitem.setPorder(porder);
         }
 
         EntityValidator.validate(porder);
 
 
-
-
-
-
-
-
         porder = porderdao.save(porder);
-        return new ResourceLink(porder.getId(),"/porders/"+porder.getId());
+        return new ResourceLink(porder.getId(), "/porders/" + porder.getId());
     }
 }
 

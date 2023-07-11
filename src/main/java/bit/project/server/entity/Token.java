@@ -25,32 +25,32 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Token{
+public class Token {
 
     @Id
-    @NotNull(message="Id is required")
-    @Size(min=36, max=36, message="Character count should be 36")
+    @NotNull(message = "Id is required")
+    @Size(min = 36, max = 36, message = "Character count should be 36")
     private String id;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private User user;
 
     private LocalDateTime tocreation;
 
     private LocalDateTime toexpiration;
 
-    @Size(min=0, max=100, message="Maximum character count is 100")
+    @Size(min = 0, max = 100, message = "Maximum character count is 100")
     private String ip;
 
-    @Size(min=0, max=20, message="Maximum character count is 20")
+    @Size(min = 0, max = 20, message = "Maximum character count is 20")
     private String status;
 
     @JsonIgnore
-    @OneToMany(mappedBy="token")
+    @OneToMany(mappedBy = "token")
     private List<Servicelog> servicelogList;
 
 
-    public Token(String id){
+    public Token(String id) {
         this.id = id;
     }
 

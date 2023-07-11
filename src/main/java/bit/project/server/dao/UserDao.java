@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
 import java.util.List;
+
 import bit.project.server.entity.Employee;
 
-@RepositoryRestResource(exported=false)
+@RepositoryRestResource(exported = false)
 public interface UserDao extends JpaRepository<User, Integer>, CriteriaQuerySupplement<User> {
     @Query("select new User(u.id, u.username, u.employee) from User u")
     Page<User> findAllBasic(PageRequest pageRequest);
@@ -20,6 +22,7 @@ public interface UserDao extends JpaRepository<User, Integer>, CriteriaQuerySupp
     User getSuperUser();
 
     User findByEmployee(Employee employee);
+
     User findByUsername(String username);
 
     @Query("select new User(u.id, u.username, u.employee) from User u where u.employee.id = :id")

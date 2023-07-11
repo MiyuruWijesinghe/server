@@ -15,12 +15,14 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 
-@RepositoryRestResource(exported=false)
-public interface EmployeeDao extends JpaRepository<Employee, Integer>{
+@RepositoryRestResource(exported = false)
+public interface EmployeeDao extends JpaRepository<Employee, Integer> {
     @Query("select new Employee (e.id, e.code, e.callingname, e.nametitle) from Employee e")
     Page<Employee> findAllBasic(PageRequest pageRequest);
 
     Employee findByNic(String nic);
+
     Employee findByMobile(String mobile);
+
     List<Employee> findAllByBranch(Branch branch);
 }

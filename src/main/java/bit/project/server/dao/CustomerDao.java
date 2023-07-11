@@ -16,16 +16,17 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.time.LocalDate;
 
-@RepositoryRestResource(exported=false)
-public interface CustomerDao extends JpaRepository<Customer, Integer>{
+@RepositoryRestResource(exported = false)
+public interface CustomerDao extends JpaRepository<Customer, Integer> {
 
 
     Customer findByNic(String nic);
+
     Customer findByContact1(String contact1);
+
     Customer findByName(String name);
 
 
-
     @Query("select count(c) from Customer c where c.regdate>=:startdate and c.regdate<=:enddate")
-    Long getCustomerCountByRange(@Param("startdate")LocalDate startdate, @Param("enddate") LocalDate enddate);
+    Long getCustomerCountByRange(@Param("startdate") LocalDate startdate, @Param("enddate") LocalDate enddate);
 }

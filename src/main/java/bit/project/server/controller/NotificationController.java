@@ -39,14 +39,17 @@ import java.util.UUID;
 public class NotificationController {
 
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "dosend");
-    @Autowired private NotificationDao notificationDao;
-    @Autowired private UserDao userDao;
-    @Autowired private AccessControlManager accessControlManager;
+    @Autowired
+    private NotificationDao notificationDao;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private AccessControlManager accessControlManager;
 
     @GetMapping("/latest")
     public List<Notification> latest(HttpServletRequest request) {
         User authUser = accessControlManager.authenticate(request);
-        return notificationDao.findAllByUser( authUser, PageRequest.of(0, 4, DEFAULT_SORT)).getContent();
+        return notificationDao.findAllByUser(authUser, PageRequest.of(0, 4, DEFAULT_SORT)).getContent();
     }
 
     @GetMapping("/unread/count")
@@ -62,17 +65,17 @@ public class NotificationController {
     @GetMapping
     public Page<Notification> all(PageQuery pageQuery, HttpServletRequest request) {
         User authUser = accessControlManager.authenticate(request);
-        return notificationDao.findAllByUser( authUser, PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
+        return notificationDao.findAllByUser(authUser, PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
     }
 
     @GetMapping("/{id}")
     public Notification get(@PathVariable String id, HttpServletRequest request) {
         User authUser = accessControlManager.authenticate(request);
         Optional<Notification> optionalNotification = notificationDao.findById(id);
-        if(optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
+        if (optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
         Notification notification = optionalNotification.get();
 
-        if(!notification.getUser().getId().equals(authUser.getId()))
+        if (!notification.getUser().getId().equals(authUser.getId()))
             throw new NoPrivilegeException("You have no privilege to see others' notifications");
 
         return notification;
@@ -82,10 +85,10 @@ public class NotificationController {
     public void setDeliveredDate(@PathVariable String id, HttpServletRequest request) {
         User authUser = accessControlManager.authenticate(request);
         Optional<Notification> optionalNotification = notificationDao.findById(id);
-        if(optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
+        if (optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
         Notification notification = optionalNotification.get();
 
-        if(!notification.getUser().getId().equals(authUser.getId()))
+        if (!notification.getUser().getId().equals(authUser.getId()))
             throw new NoPrivilegeException("You have no privilege to update others' notifications");
 
         notification.setDodelivered(LocalDateTime.now());
@@ -96,10 +99,10 @@ public class NotificationController {
     public void setReadDate(@PathVariable String id, HttpServletRequest request) {
         User authUser = accessControlManager.authenticate(request);
         Optional<Notification> optionalNotification = notificationDao.findById(id);
-        if(optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
+        if (optionalNotification.isEmpty()) throw new ObjectNotFoundException("Notification not found");
         Notification notification = optionalNotification.get();
 
-        if(!notification.getUser().getId().equals(authUser.getId()))
+        if (!notification.getUser().getId().equals(authUser.getId()))
             throw new NoPrivilegeException("You have no privilege to update others' notifications");
 
         notification.setDoread(LocalDateTime.now());
@@ -117,17 +120,17 @@ public class NotificationController {
         notification.setDosend(LocalDateTime.now());
         notification.setMessage(notification.getMessage());
         notificationDao.save(notification);
-        return new ResourceLink(notification.getId(),"/notifications/"+notification.getId());
+        return new ResourceLink(notification.getId(), "/notifications/" + notification.getId());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable String id){
-        try{
-            if(notificationDao.existsById(id)) {
+    public void delete(@PathVariable String id) {
+        try {
+            if (notificationDao.existsById(id)) {
                 notificationDao.deleteById(id);
             }
-        }catch (DataIntegrityViolationException | RollbackException e){
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this notification already used in another module");
         }
     }

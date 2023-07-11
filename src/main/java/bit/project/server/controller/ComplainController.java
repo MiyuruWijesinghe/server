@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/complains")
@@ -47,7 +48,7 @@ public class ComplainController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public ComplainController(){
+    public ComplainController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("complain");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -56,11 +57,11 @@ public class ComplainController {
     }
 
     @GetMapping
-    public Page<Complain> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Complain> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all complains", UsecaseList.GET_ALL_COMPLAINS);
 
-        if(pageQuery.isEmptySearch()){
-            return complainDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return complainDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -73,10 +74,10 @@ public class ComplainController {
 
         List<Complain> filteredComplains = stream.filter(complain -> {
 
-            if(nic!=null)
-                if(!complain.getNic().toLowerCase().contains(nic.toLowerCase())) return false;
-            if(contact!=null){
-                if(!complain.getContact().toLowerCase().contains(contact.toLowerCase())) return false;
+            if (nic != null)
+                if (!complain.getNic().toLowerCase().contains(nic.toLowerCase())) return false;
+            if (contact != null) {
+                if (!complain.getContact().toLowerCase().contains(contact.toLowerCase())) return false;
 
             }
 
@@ -91,17 +92,17 @@ public class ComplainController {
         accessControlManager.authorize(request, "No privilege to get details of a complain", UsecaseList.GET_COMPLAIN);
 
         Optional<Complain> optionalComplain = complainDao.findById(id);
-        if(optionalComplain.isEmpty()) throw new ObjectNotFoundException("Complain not found");
+        if (optionalComplain.isEmpty()) throw new ObjectNotFoundException("Complain not found");
         return optionalComplain.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a complain", UsecaseList.DELETE_COMPLAIN);
 
-        try{
-            if(complainDao.existsById(id)) complainDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (complainDao.existsById(id)) complainDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this complain already used in another module");
         }
     }
@@ -119,24 +120,24 @@ public class ComplainController {
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Complain complainByNic = complainDao.findByNic(complain.getNic());
         Complain complainByContact = complainDao.findByContact(complain.getContact());
-        if(complainByNic!=null) errorBag.add("nic","NIC number already exists");
-        if(complainByContact!=null) errorBag.add("contact","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (complainByNic != null) errorBag.add("nic", "NIC number already exists");
+        if (complainByContact != null) errorBag.add("contact", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             complain.setCode(codeGenerator.getNextId(codeConfig));
             return complainDao.save(complain);
         });
 
-        return new ResourceLink(complain.getId(),"/complains/"+complain.getId());
+        return new ResourceLink(complain.getId(), "/complains/" + complain.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Complain complain, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Complain complain, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update complain details", UsecaseList.UPDATE_COMPLAIN);
 
         Optional<Complain> optionalComplain = complainDao.findById(id);
-        if(optionalComplain.isEmpty()) throw new ObjectNotFoundException("Complain not found");
+        if (optionalComplain.isEmpty()) throw new ObjectNotFoundException("Complain not found");
         Complain oldComplain = optionalComplain.get();
 
         complain.setId(id);
@@ -149,12 +150,14 @@ public class ComplainController {
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Complain complainByNic = complainDao.findByNic(complain.getNic());
         Complain complainByContact = complainDao.findByContact(complain.getContact());
-        if(complainByNic!=null) if(!complainByNic.getId().equals(id)) errorBag.add("nic","NIC number already exists");
-        if(complainByContact!=null) if(!complainByContact.getId().equals(id)) errorBag.add("contact","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (complainByNic != null)
+            if (!complainByNic.getId().equals(id)) errorBag.add("nic", "NIC number already exists");
+        if (complainByContact != null)
+            if (!complainByContact.getId().equals(id)) errorBag.add("contact", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         complain = complainDao.save(complain);
-        return new ResourceLink(complain.getId(),"/complains/"+complain.getId());
+        return new ResourceLink(complain.getId(), "/complains/" + complain.getId());
     }
 
 }

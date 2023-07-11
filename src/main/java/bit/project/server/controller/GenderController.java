@@ -15,10 +15,11 @@ import java.util.List;
 @RequestMapping("/genders")
 public class GenderController {
 
-    @Autowired GenderDao genderDao;
+    @Autowired
+    GenderDao genderDao;
 
     @GetMapping
-    public List<Gender> getAll(){
+    public List<Gender> getAll() {
         return genderDao.findAll();
     }
 }

@@ -34,28 +34,28 @@ public class File {
     private Boolean isused;
 
 
-    public File(String id){
+    public File(String id) {
         this.id = id;
     }
 
-    public File(String id, byte[] thumbnail, String thumbnailmimetype){
+    public File(String id, byte[] thumbnail, String thumbnailmimetype) {
         this.id = id;
-        this.thumbnail =thumbnail;
+        this.thumbnail = thumbnail;
         this.thumbnailmimetype = thumbnailmimetype;
     }
 
-    public File(String id, String filemimetype, byte[] file){
+    public File(String id, String filemimetype, byte[] file) {
         this.id = id;
         this.file = file;
         this.filemimetype = filemimetype;
     }
 
-    public File(String id, LocalDateTime tocreation){
+    public File(String id, LocalDateTime tocreation) {
         this.id = id;
         this.tocreation = tocreation;
     }
 
-    public File(String id, Long filesize, String originalname, String filemimetype){
+    public File(String id, Long filesize, String originalname, String filemimetype) {
         this.id = id;
         this.filesize = filesize;
         this.originalname = originalname;

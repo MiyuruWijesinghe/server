@@ -15,10 +15,11 @@ import java.util.List;
 @RequestMapping("/civilstatuses")
 public class CivilstatusController {
 
-    @Autowired CivilstatusDao civilstatusDao;
+    @Autowired
+    CivilstatusDao civilstatusDao;
 
     @GetMapping
-    public List<Civilstatus> getAll(){
+    public List<Civilstatus> getAll() {
         return civilstatusDao.findAll();
     }
 }

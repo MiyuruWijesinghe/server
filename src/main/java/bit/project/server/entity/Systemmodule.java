@@ -20,20 +20,20 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Systemmodule{
+public class Systemmodule {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min=0, max=255, message="Maximum character count is 255")
+    @Size(min = 0, max = 255, message = "Maximum character count is 255")
     private String name;
 
-    @OneToMany(mappedBy="systemmodule")
+    @OneToMany(mappedBy = "systemmodule")
     @JsonIgnoreProperties({"systemmodule"})
     private List<Usecase> usecaseList;
 
-    public Systemmodule(Integer id){
+    public Systemmodule(Integer id) {
         this.id = id;
     }
 

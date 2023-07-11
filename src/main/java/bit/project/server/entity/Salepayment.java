@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class Salepayment {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
 
@@ -30,10 +30,10 @@ public class Salepayment {
     private LocalDate date;
 
     @JsonIgnore
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Sale sale;
 
-    public Salepayment(Integer id){
+    public Salepayment(Integer id) {
         this.id = id;
     }
 

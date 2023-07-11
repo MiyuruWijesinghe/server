@@ -90,7 +90,7 @@ public enum UsecaseList {
 
     public final int value;
 
-    UsecaseList(int value){
+    UsecaseList(int value) {
         this.value = value;
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import javax.persistence.RollbackException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import bit.project.server.dao.EmployeeDao;
 import bit.project.server.entity.Employee;
 
@@ -40,16 +42,20 @@ public class UserController {
 
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "tocreation");
 
-    @Autowired private UserDao userDao;
-    @Autowired private UsecaseDao usecaseDao;
-    @Autowired private AccessControlManager accessControlManager;
-    @Autowired private FileDao fileDao;
-    @Autowired private EmployeeDao employeeDao;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private UsecaseDao usecaseDao;
+    @Autowired
+    private AccessControlManager accessControlManager;
+    @Autowired
+    private FileDao fileDao;
+    @Autowired
+    private EmployeeDao employeeDao;
 
     @GetMapping
     public Page<User> getAll(PageQuery pageQuery, HttpServletRequest request) {
-
-        accessControlManager.authorize(request, "No privilege to get all users",  UsecaseList.SHOW_ALL_USERS);
+        accessControlManager.authorize(request, "No privilege to get all users", UsecaseList.SHOW_ALL_USERS);
 
         String userstatus = pageQuery.getSearchParam("userstatus");
         String username = pageQuery.getSearchParam("username");
@@ -59,17 +65,18 @@ public class UserController {
         Stream<User> stream = users.parallelStream();
 
         List<User> filteredUsers = stream.filter(user -> {
-            if(user.isSuperAdmin()) return false;
-            if(userstatus!=null)
-                if(!user.getStatus().equalsIgnoreCase(userstatus)) return false;
-            if(username!=null)
-                if(!user.getUsername().toLowerCase().contains(username.toLowerCase())) return false;
+            if (user.isSuperAdmin()) return false;
+            if (userstatus != null)
+                if (!user.getStatus().equalsIgnoreCase(userstatus)) return false;
+            if (username != null)
+                if (!user.getUsername().toLowerCase().contains(username.toLowerCase())) return false;
 
-            if(displayName != null){
+            if (displayName != null) {
                 String dname = "";
                 Employee employee = user.getEmployee();
-                if(employee != null) dname = employee.getCode() + " - " + employee.getNametitle().getName() + " " + employee.getCallingname();
-                if(!dname.toLowerCase().contains(displayName.toLowerCase())) return false;
+                if (employee != null)
+                    dname = employee.getCode() + " - " + employee.getNametitle().getName() + " " + employee.getCallingname();
+                if (!dname.toLowerCase().contains(displayName.toLowerCase())) return false;
             }
 
 
@@ -81,8 +88,8 @@ public class UserController {
     }
 
     @GetMapping("/basic")
-    public Page<User> getAllBasic(PageQuery pageQuery, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to get all users' basic data",  UsecaseList.SHOW_ALL_USERS);
+    public Page<User> getAllBasic(PageQuery pageQuery, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to get all users' basic data", UsecaseList.SHOW_ALL_USERS);
         Page<User> userPage = userDao.findAllBasic(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         Stream<User> stream = userPage.getContent().parallelStream();
         List<User> filteredUsers = stream.filter(user -> !user.isSuperAdmin()).collect(Collectors.toList());
@@ -91,32 +98,32 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User get(@PathVariable Integer id, HttpServletRequest request) {
-        accessControlManager.authorize(request, "No privilege to get user",  UsecaseList.SHOW_USER_DETAILS);
+        accessControlManager.authorize(request, "No privilege to get user", UsecaseList.SHOW_USER_DETAILS);
         Optional<User> optionalUser = userDao.findById(id);
-        if(optionalUser.isEmpty()) throw new ObjectNotFoundException("User not found");
+        if (optionalUser.isEmpty()) throw new ObjectNotFoundException("User not found");
         User user = optionalUser.get();
-        if(user.isSuperAdmin()){
+        if (user.isSuperAdmin()) {
             throw new NoPrivilegeException("No privilege to retrieve super admin data");
         }
         return user;
     }
 
     @GetMapping("/employees")
-    public List<Employee> getAllUserEmployees(HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to get user employees",  UsecaseList.ADD_USER);
+    public List<Employee> getAllUserEmployees(HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to get user employees", UsecaseList.ADD_USER);
         return userDao.findAllUserEmployees();
     }
 
     @GetMapping("/nonuser/employees")
-    public List<Employee> getAllNonUserEmployees(HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to get non user employees",  UsecaseList.ADD_USER);
+    public List<Employee> getAllNonUserEmployees(HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to get non user employees", UsecaseList.ADD_USER);
         return userDao.findAllNonUserEmployees();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceLink add(@RequestBody User user, HttpServletRequest request){
-        User authUser = accessControlManager.authorize(request, "No privilege to add new user",  UsecaseList.ADD_USER);
+    public ResourceLink add(@RequestBody User user, HttpServletRequest request) {
+        User authUser = accessControlManager.authorize(request, "No privilege to add new user", UsecaseList.ADD_USER);
 
         String textPassword = user.getPassword();
         user.setTocreation(LocalDateTime.now());
@@ -128,35 +135,36 @@ public class UserController {
         EntityValidator.validate(user);
         ValidationErrorBag errorBag = new ValidationErrorBag();
 
-        if(user.getEmployee()!=null){
+        if (user.getEmployee() != null) {
             Optional<Employee> optionalEmployee = employeeDao.findById(user.getEmployee().getId());
-            if(optionalEmployee.isEmpty()){
-                errorBag.add("employee","The selected employee is not a valid employee");
-            }else{
+            if (optionalEmployee.isEmpty()) {
+                errorBag.add("employee", "The selected employee is not a valid employee");
+            } else {
                 Employee employee = optionalEmployee.get();
                 user.setUsername(employee.getCode());
                 User userByEmployee = userDao.findByEmployee(employee);
-                if(userByEmployee!=null) errorBag.add("employee","The selected employee is already a user");
+                if (userByEmployee != null) errorBag.add("employee", "The selected employee is already a user");
             }
-        }else {
-            errorBag.add("employee","Employee is required");
+        } else {
+            errorBag.add("employee", "Employee is required");
         }
 
-        if(!accessControlManager.isStrongPassword(textPassword)) errorBag.add("password","Please enter a strong password like P@ssw0rd");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (!accessControlManager.isStrongPassword(textPassword))
+            errorBag.add("password", "Please enter a strong password like P@ssw0rd");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         userDao.save(user);
         fileDao.updateIsusedById(user.getPhoto(), true);
 
-        return new ResourceLink(user.getId(), "/users/"+user.getId());
+        return new ResourceLink(user.getId(), "/users/" + user.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody User user, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to update user details",  UsecaseList.UPDATE_USER);
+    public ResourceLink update(@PathVariable Integer id, @RequestBody User user, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to update user details", UsecaseList.UPDATE_USER);
         User oldUser = getUser(id);
 
-        if(oldUser.isSuperAdmin()){
+        if (oldUser.isSuperAdmin()) {
             throw new NoPrivilegeException("No privilege to update super admin data");
         }
 
@@ -167,11 +175,11 @@ public class UserController {
         user.setTocreation(oldUser.getTocreation());
         user.setCreator(oldUser.getCreator());
 
-        if(user.getStatus().equals(Userstatus.ACTIVE.toString()))
-        if(oldUser.getStatus().equals(Userstatus.LOCKED.toString())){
-            user.setFailedattempts(0);
-            user.setTolocked(null);
-        }
+        if (user.getStatus().equals(Userstatus.ACTIVE.toString()))
+            if (oldUser.getStatus().equals(Userstatus.LOCKED.toString())) {
+                user.setFailedattempts(0);
+                user.setTolocked(null);
+            }
 
         EntityValidator.validate(user);
 
@@ -182,50 +190,50 @@ public class UserController {
         fileDao.updateIsusedById(oldPhotoId, false);
         fileDao.updateIsusedById(newPhotoId, true);
 
-        return new ResourceLink(user.getId(), "/users/"+user.getId());
+        return new ResourceLink(user.getId(), "/users/" + user.getId());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to delete users",  UsecaseList.DELETE_USER);
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to delete users", UsecaseList.DELETE_USER);
 
         Optional<User> userOptional = userDao.findById(id);
-        if(userOptional.isEmpty()) return;
+        if (userOptional.isEmpty()) return;
         User user = userOptional.get();
 
-        if(user.isSuperAdmin()){
+        if (user.isSuperAdmin()) {
             throw new NoPrivilegeException("No privilege to delete super admin");
         }
 
-        try{
+        try {
             userDao.deleteById(id);
             fileDao.updateIsusedById(user.getPhoto(), false);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this user already used in another module");
         }
     }
 
     @PutMapping("/{id}/password")
-    public ResourceLink resetPassword(@PathVariable Integer id, @RequestBody HashMap<String, String> data, HttpServletRequest request){
-        accessControlManager.authorize(request, "No privilege to reset user password",  UsecaseList.RESET_USER_PASSWORDS);
+    public ResourceLink resetPassword(@PathVariable Integer id, @RequestBody HashMap<String, String> data, HttpServletRequest request) {
+        accessControlManager.authorize(request, "No privilege to reset user password", UsecaseList.RESET_USER_PASSWORDS);
 
         User user = getUser(id);
 
-        if(user.isSuperAdmin()){
+        if (user.isSuperAdmin()) {
             throw new NoPrivilegeException("No privilege to reset super admin password");
         }
 
-        String newPassword = data.getOrDefault("password","");
-        if(!accessControlManager.isStrongPassword(newPassword)){
+        String newPassword = data.getOrDefault("password", "");
+        if (!accessControlManager.isStrongPassword(newPassword)) {
             ValidationErrorBag errorBag = new ValidationErrorBag();
-            errorBag.add("password","Please enter a strong password like P@ssw0rd");
+            errorBag.add("password", "Please enter a strong password like P@ssw0rd");
             throw new DataValidationException(errorBag);
         }
 
         user.setPassword(accessControlManager.getHashedPassword(newPassword));
         user = userDao.save(user);
-        return new ResourceLink(user.getId(), "/users/"+user.getId());
+        return new ResourceLink(user.getId(), "/users/" + user.getId());
     }
 
     @GetMapping("/me")
@@ -236,31 +244,31 @@ public class UserController {
     @GetMapping("/me/usecases")
     public List<Usecase> meUsecases(HttpServletRequest request) {
         User user = accessControlManager.authenticate(request);
-        if(user.isSuperAdmin()){
+        if (user.isSuperAdmin()) {
             return usecaseDao.findAll();
-        }else{
+        } else {
             return accessControlManager.getUsecases(user);
         }
     }
 
     @PutMapping("/me/password")
-    public ResourceLink changeMyPassword(@RequestBody HashMap<String, String> data, HttpServletRequest request){
+    public ResourceLink changeMyPassword(@RequestBody HashMap<String, String> data, HttpServletRequest request) {
         User user = accessControlManager.authenticate(request);
 
-        String newPassword = data.getOrDefault("newPassword","");
-        String oldPassword = data.getOrDefault("oldPassword","");
+        String newPassword = data.getOrDefault("newPassword", "");
+        String oldPassword = data.getOrDefault("oldPassword", "");
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
 
-        if(!accessControlManager.isStrongPassword(newPassword)){
-            errorBag.add("newPassword","Please enter a strong password like P@ssw0rd");
+        if (!accessControlManager.isStrongPassword(newPassword)) {
+            errorBag.add("newPassword", "Please enter a strong password like P@ssw0rd");
         }
 
-        if(!accessControlManager.isMatchedHashPassword(oldPassword, user.getPassword())){
-            errorBag.add("oldPassword","Existing password is not matched");
+        if (!accessControlManager.isMatchedHashPassword(oldPassword, user.getPassword())) {
+            errorBag.add("oldPassword", "Existing password is not matched");
         }
 
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         user.setPassword(accessControlManager.getHashedPassword(newPassword));
         user = userDao.save(user);
@@ -269,7 +277,7 @@ public class UserController {
     }
 
     @PutMapping("/me/photo")
-    public ResourceLink changeMyPhoto(@RequestBody HashMap<String, String> data, HttpServletRequest request){
+    public ResourceLink changeMyPhoto(@RequestBody HashMap<String, String> data, HttpServletRequest request) {
         User user = accessControlManager.authenticate(request);
 
         String photo = data.getOrDefault("photo", null);
@@ -284,14 +292,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/photo")
-    public HashMap<String, String> getPhoto(@PathVariable Integer id, HttpServletRequest request){
+    public HashMap<String, String> getPhoto(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get user photo", UsecaseList.SHOW_USER_DETAILS);
 
         User user = getUser(id);
 
         Optional<File> optionalFile = fileDao.findFileById(user.getPhoto());
 
-        if(optionalFile.isEmpty()) {
+        if (optionalFile.isEmpty()) {
             throw new ObjectNotFoundException("Photo not found");
         }
 
@@ -303,9 +311,9 @@ public class UserController {
         return data;
     }
 
-    private User getUser(Integer id){
+    private User getUser(Integer id) {
         Optional<User> userOptional = userDao.findById(id);
-        if(userOptional.isEmpty()) throw new ObjectNotFoundException("User not found");
+        if (userOptional.isEmpty()) throw new ObjectNotFoundException("User not found");
         return userOptional.get();
     }
 }

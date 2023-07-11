@@ -15,10 +15,11 @@ import java.util.List;
 @RequestMapping("/employeestatuses")
 public class EmployeestatusController {
 
-    @Autowired EmployeestatusDao employeestatusDao;
+    @Autowired
+    EmployeestatusDao employeestatusDao;
 
     @GetMapping
-    public List<Employeestatus> getAll(){
+    public List<Employeestatus> getAll() {
         return employeestatusDao.findAll();
     }
 }

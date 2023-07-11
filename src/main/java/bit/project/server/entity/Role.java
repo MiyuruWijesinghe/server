@@ -24,43 +24,43 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Role{
+public class Role {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
     @NotNull(message = "Name is required")
-    @Size(min=0, max=100, message="Maximum character count is 100")
+    @Size(min = 0, max = 100, message = "Maximum character count is 100")
     private String name;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime tocreation;
 
     @JsonIgnoreProperties({"roleList"})
-    @ManyToMany(mappedBy="roleList")
+    @ManyToMany(mappedBy = "roleList")
     private List<User> userList;
 
     @Valid
     @ManyToMany
     @JsonIgnoreProperties({"roleList"})
     @JoinTable(
-        name="roleusecase",
-        joinColumns=@JoinColumn(name="role_id", referencedColumnName="id"),
-        inverseJoinColumns=@JoinColumn(name="usecase_id", referencedColumnName="id")
+            name = "roleusecase",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "usecase_id", referencedColumnName = "id")
     )
     private List<Usecase> usecaseList;
 
 
-    public Role(Integer id){
+    public Role(Integer id) {
         this.id = id;
     }
 
-    public Role(Integer id, String name){
+    public Role(Integer id, String name) {
         this.id = id;
         this.name = name;
     }

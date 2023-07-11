@@ -22,8 +22,8 @@ public class PorderstatusController {
     PorderstatusDao porderstatusDao;
 
     @GetMapping
-    public List<Porderstatus> getAll(){
+    public List<Porderstatus> getAll() {
         return porderstatusDao.findAll();
     }
-    }
+}
 

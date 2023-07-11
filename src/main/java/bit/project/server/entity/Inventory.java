@@ -24,10 +24,10 @@ import java.util.List;
 public class Inventory {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min=10, max=10 , message="Character count should be 10")
+    @Size(min = 10, max = 10, message = "Character count should be 10")
     private String code;
 
     private LocalDate doexpired;
@@ -41,34 +41,31 @@ public class Inventory {
 
     private String batchno;
 
-    @ManyToOne(optional=false)
-     Branch branch ;
+    @ManyToOne(optional = false)
+    Branch branch;
 
-    @ManyToOne(optional=false)
-    private Item item ;
+    @ManyToOne(optional = false)
+    private Item item;
 
     @ManyToOne
     private Purchase purchase;
 
 
-    @OneToMany(mappedBy = "inventory", fetch = FetchType.LAZY, orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "inventory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Inventorycustomertype> inventorycustomertypeList;
 
 
     @JsonIgnore
-    @OneToMany(mappedBy="inventory")
+    @OneToMany(mappedBy = "inventory")
     private List<Saleitem> saleitemList;
 
 
-
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User creator;
 
 
-
-
-    public Inventory (Integer id){
+    public Inventory(Integer id) {
         this.id = id;
     }
 

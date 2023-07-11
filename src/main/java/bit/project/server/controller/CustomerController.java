@@ -47,7 +47,7 @@ public class CustomerController {
     private CodeGenerator codeGenerator;
     private final CodeGenerator.CodeGeneratorConfig codeConfig;
 
-    public CustomerController(){
+    public CustomerController() {
         codeConfig = new CodeGenerator.CodeGeneratorConfig("customer");
         codeConfig.setColumnName("code");
         codeConfig.setLength(10);
@@ -56,11 +56,11 @@ public class CustomerController {
     }
 
     @GetMapping
-    public Page<Customer> getAll(PageQuery pageQuery, HttpServletRequest request){
+    public Page<Customer> getAll(PageQuery pageQuery, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get all customers", UsecaseList.GET_ALL_CUSTOMERS);
 
-        if(pageQuery.isEmptySearch()){
-            return customerDao.findAll(PageRequest.of(pageQuery.getPage(),pageQuery.getSize(), DEFAULT_SORT));
+        if (pageQuery.isEmptySearch()) {
+            return customerDao.findAll(PageRequest.of(pageQuery.getPage(), pageQuery.getSize(), DEFAULT_SORT));
         }
 
 
@@ -73,15 +73,16 @@ public class CustomerController {
 
         List<Customer> filteredCustomers = stream.filter(customer -> {
 
-            if(name!=null)
-                if(!customer.getName().toLowerCase().contains(name.toLowerCase())) return false;
-            if(nic!=null)
-                if(!customer.getNic().toLowerCase().contains(nic.toLowerCase())) return false;
-            if(contact!=null){
+            if (name != null)
+                if (!customer.getName().toLowerCase().contains(name.toLowerCase())) return false;
+            if (nic != null)
+                if (!customer.getNic().toLowerCase().contains(nic.toLowerCase())) return false;
+            if (contact != null) {
                 boolean crit1 = customer.getContact1().toLowerCase().contains(contact.toLowerCase());
                 boolean crit2 = false;
-                if(customer.getContact2() != null) crit2 = customer.getContact2().toLowerCase().contains(contact.toLowerCase());
-                if(!crit1 && !crit2) return false;
+                if (customer.getContact2() != null)
+                    crit2 = customer.getContact2().toLowerCase().contains(contact.toLowerCase());
+                if (!crit1 && !crit2) return false;
             }
 
             return true;
@@ -95,17 +96,17 @@ public class CustomerController {
         accessControlManager.authorize(request, "No privilege to get details of a customer", UsecaseList.GET_CUSTOMER);
 
         Optional<Customer> optionalCustomer = customerDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Customer not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Customer not found");
         return optionalCustomer.get();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id, HttpServletRequest request){
+    public void delete(@PathVariable Integer id, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to get details of a customer", UsecaseList.DELETE_CUSTOMER);
 
-        try{
-            if(customerDao.existsById(id)) customerDao.deleteById(id);
-        }catch (DataIntegrityViolationException | RollbackException e){
+        try {
+            if (customerDao.existsById(id)) customerDao.deleteById(id);
+        } catch (DataIntegrityViolationException | RollbackException e) {
             throw new ConflictException("Cannot delete. Because this customer already used in another module");
         }
     }
@@ -124,23 +125,23 @@ public class CustomerController {
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Customer customerByContact1 = customerDao.findByContact1(customer.getContact1());
-        if(customerByContact1!=null) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (customerByContact1 != null) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
-        PersistHelper.save(()->{
+        PersistHelper.save(() -> {
             customer.setCode(codeGenerator.getNextId(codeConfig));
             return customerDao.save(customer);
         });
 
-        return new ResourceLink(customer.getId(),"/customers/"+customer.getId());
+        return new ResourceLink(customer.getId(), "/customers/" + customer.getId());
     }
 
     @PutMapping("/{id}")
-    public ResourceLink update(@PathVariable Integer id, @RequestBody Customer customer, HttpServletRequest request){
+    public ResourceLink update(@PathVariable Integer id, @RequestBody Customer customer, HttpServletRequest request) {
         accessControlManager.authorize(request, "No privilege to update customer details", UsecaseList.UPDATE_CUSTOMER);
 
         Optional<Customer> optionalCustomer = customerDao.findById(id);
-        if(optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Customer not found");
+        if (optionalCustomer.isEmpty()) throw new ObjectNotFoundException("Customer not found");
         Customer oldCustomer = optionalCustomer.get();
 
         customer.setId(id);
@@ -154,10 +155,11 @@ public class CustomerController {
 
         ValidationErrorBag errorBag = new ValidationErrorBag();
         Customer customerByContact1 = customerDao.findByContact1(customer.getContact1());
-        if(customerByContact1!=null) if(!customerByContact1.getId().equals(id)) errorBag.add("contact1","Contact number already exists");
-        if(errorBag.count()>0) throw new DataValidationException(errorBag);
+        if (customerByContact1 != null)
+            if (!customerByContact1.getId().equals(id)) errorBag.add("contact1", "Contact number already exists");
+        if (errorBag.count() > 0) throw new DataValidationException(errorBag);
 
         customer = customerDao.save(customer);
-        return new ResourceLink(customer.getId(),"/customers/"+customer.getId());
+        return new ResourceLink(customer.getId(), "/customers/" + customer.getId());
     }
 }

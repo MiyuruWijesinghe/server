@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/units")
@@ -19,6 +20,7 @@ public class UnitController {
     UnitDao unitDao;
 
     @GetMapping
-    public List<Unit> getAll(){ return unitDao.findAll();
+    public List<Unit> getAll() {
+        return unitDao.findAll();
     }
 }
